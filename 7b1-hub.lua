@@ -1,20 +1,22 @@
 -- =======================================================
--- 7b1 Hub - Universal Loader
+-- 7b1 Hub - Fluent UI Version
 -- Supported: PC, Android, Cloud Phone | Keyless
 -- =======================================================
 
-local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
+local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+local PlaceId = game.PlaceId
 
--- Khởi tạo Window 7b1 Hub
-local Window = OrionLib:MakeWindow({
-    Name = "7b1 Hub | Universal",
-    HidePremium = true,
-    SaveConfig = false,
-    ConfigFolder = "7b1HubConfig",
-    IntroText = "Loading 7b1 Hub..."
+-- Khởi tạo Window
+local Window = Fluent:CreateWindow({
+    Title = "7b1 Hub | Universal",
+    SubTitle = "Auto Detect Game",
+    TabWidth = 160,
+    Size = UDim2.fromOffset(500, 320),
+    Theme = "Dark",
+    MinimizeKey = Enum.KeyCode.LeftControl
 })
 
--- Hàm Tối Ưu Đồ Họa (Fix Lag Max)
+-- Hàm Fix Lag Max
 local function ApplyMaxFixLag()
     local Terrain = workspace:FindFirstChildOfClass('Terrain')
     if Terrain then
@@ -36,194 +38,98 @@ local function ApplyMaxFixLag()
             v.Enabled = false
         end
     end
-    OrionLib:MakeNotification({
-        Name = "7b1 Hub",
-        Content = "Đã kích hoạt Fix Lag Max!",
-        Image = "rbxassetid://4483345998",
-        Time = 3
+    
+    Fluent:Notify({
+        Title = "7b1 Hub",
+        Content = "Đã kích hoạt Fix Lag Max thành công!",
+        Duration = 3
     })
 end
 
 -- TAB 1: FIX LAG & UTILITY
-local TabUtility = Window:MakeTab({
-    Name = "Fix Lag & Utility",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
-})
+local Tabs = {
+    Utility = Window:AddTab({ Title = "Fix Lag & Utility", Icon = "zap" })
+}
 
-TabUtility:AddButton({
-    Name = "⚡ Kích Hoạt Fix Lag Max (Tăng FPS)",
+Tabs.Utility:AddButton({
+    Title = "⚡ Kích Hoạt Fix Lag Max",
+    Description = "Tăng FPS tối đa cho Cloud Phone & Điện thoại",
     Callback = function()
         ApplyMaxFixLag()
-    end    
+    end
 })
 
-TabUtility:AddButton({
-    Name = "🛡️ Chống AFK (Tránh Văng 20p)",
+Tabs.Utility:AddButton({
+    Title = "🛡️ Chống AFK (Tránh Văng 20p)",
+    Description = "Tự động giữ kết nối 24/7",
     Callback = function()
         local ba = game:GetService("VirtualUser")
         game:GetService("Players").LocalPlayer.Idled:Connect(function()
             ba:CaptureController()
             ba:ClickButton2(Vector2.new())
         end)
-        OrionLib:MakeNotification({
-            Name = "7b1 Hub",
+        Fluent:Notify({
+            Title = "7b1 Hub",
             Content = "Đã bật Anti-AFK!",
-            Time = 3
+            Duration = 3
         })
-    end    
-})
-
--- TAB 2: STEAL AN EGG
-local TabSAE = Window:MakeTab({
-    Name = "Steal An Egg",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
-})
-
-TabSAE:AddButton({
-    Name = "▶ Run Chilli V4 (Tiếng Việt)",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/kadit9999/stealanegg/refs/heads/main/chillimodrubu.lua"))()
-    end    
-})
-
-TabSAE:AddButton({
-    Name = "▶ Run Chilli Vzexe (Spicy)",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/tienkhanh1/spicy/main/Chilli.lua"))()
-    end    
-})
-
-TabSAE:AddButton({
-    Name = "▶ Run Chilli Venyx (Mod Viễn Đông)",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/ronnei/hihi/refs/heads/main/chillihubnew.lua"))()
-    end    
-})
-
--- TAB 3: BLOX FRUITS
-local TabBF = Window:MakeTab({
-    Name = "Blox Fruits",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
-})
-
-TabBF:AddButton({
-    Name = "▶ Run RealKid Hub (Blox Fruits)",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/realkidhub/realkid/refs/heads/main/main.lua"))()
-    end    
-})
-
--- TAB 4: LOW-END OPTIMIZATION
-local TabOptimize = Window:MakeTab({
-    Name = "Low-End Optimizer",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
-})
-
-local lowEndMode = false
-
-local function DisableVisualHeavyEffects()
-    local lighting = game:GetService("Lighting")
-    lighting.GlobalShadows = false
-    lighting.FogEnd = 9e9
-    lighting.FogStart = 9e9
-    lighting.Brightness = 1
-    lighting.ClockTime = 14
-    lighting.OutdoorAmbient = Color3.fromRGB(128, 128, 128)
-
-    local terrain = workspace:FindFirstChildOfClass("Terrain")
-    if terrain then
-        terrain.WaterWaveSize = 0
-        terrain.WaterWaveSpeed = 0
-        terrain.WaterReflectance = 0
-        terrain.WaterTransparency = 0
     end
+})
 
-    for _, obj in ipairs(game:GetDescendants()) do
-        if obj:IsA("Part") or obj:IsA("UnionOperation") or obj:IsA("MeshPart") then
-            obj.Material = Enum.Material.SmoothPlastic
-            obj.Reflectance = 0
-        elseif obj:IsA("Decal") or obj:IsA("Texture") then
-            if obj.Parent then
-                obj:Destroy()
-            end
-        elseif obj:IsA("ParticleEmitter") or obj:IsA("Trail") or obj:IsA("Beam") then
-            obj.Enabled = false
-        elseif obj:IsA("Explosion") then
-            obj.BlastPressure = 0
-            obj.BlastRadius = 0
+-- NHẬN DIỆN GAME & THÊM TAB
+local isSAE = string.find(game:GetService("MarketplaceService"):GetProductInfo(PlaceId).Name:lower(), "egg")
+local isBF  = (PlaceId == 2753915549 or PlaceId == 4442272183 or PlaceId == 7449423635) or string.find(game:GetService("MarketplaceService"):GetProductInfo(PlaceId).Name:lower(), "blox fruit")
+
+if isSAE then
+    Tabs.SAE = Window:AddTab({ Title = "Steal An Egg", Icon = "egg" })
+
+    Tabs.SAE:AddButton({
+        Title = "▶ Run Chilli V4 (Tiếng Việt)",
+        Callback = function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/kadit9999/stealanegg/refs/heads/main/chillimodrubu.lua"))()
         end
-    end
+    })
+
+    Tabs.SAE:AddButton({
+        Title = "▶ Run Chilli Vzexe (Spicy)",
+        Callback = function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/tienkhanh1/spicy/main/Chilli.lua"))()
+        end
+    })
+
+    Tabs.SAE:AddButton({
+        Title = "▶ Run Chilli Venyx (Mod Viễn Đông)",
+        Callback = function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/ronnei/hihi/refs/heads/main/chillihubnew.lua"))()
+        end
+    })
+
+elseif isBF then
+    Tabs.BF = Window:AddTab({ Title = "Blox Fruits", Icon = "swords" })
+
+    Tabs.BF:AddButton({
+        Title = "▶ Run RealKid Hub (Blox Fruits)",
+        Callback = function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/realkidhub/realkid/refs/heads/main/main.lua"))()
+        end
+    })
+
+else
+    Tabs.All = Window:AddTab({ Title = "All Scripts", Icon = "layers" })
+
+    Tabs.All:AddButton({
+        Title = "▶ Run RealKid Hub (Blox Fruits)",
+        Callback = function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/realkidhub/realkid/refs/heads/main/main.lua"))()
+        end
+    })
+
+    Tabs.All:AddButton({
+        Title = "▶ Run Chilli V4 (Steal An Egg)",
+        Callback = function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/kadit9999/stealanegg/refs/heads/main/chillimodrubu.lua"))()
+        end
+    })
 end
 
-local function RestoreVisualEffects()
-    local lighting = game:GetService("Lighting")
-    lighting.GlobalShadows = true
-    lighting.FogEnd = 1000
-    lighting.FogStart = 0
-    lighting.Brightness = 2
-    lighting.ClockTime = 14
-    lighting.OutdoorAmbient = Color3.fromRGB(128, 128, 128)
-
-    for _, obj in ipairs(game:GetDescendants()) do
-        if obj:IsA("ParticleEmitter") or obj:IsA("Trail") or obj:IsA("Beam") then
-            obj.Enabled = true
-        elseif obj:IsA("Explosion") then
-            obj.BlastPressure = 1
-            obj.BlastRadius = 10
-        end
-    end
-end
-
-TabOptimize:AddButton({
-    Name = "⚡ Bật/Tắt Low-End Fix",
-    Callback = function()
-        lowEndMode = not lowEndMode
-        if lowEndMode then
-            DisableVisualHeavyEffects()
-            OrionLib:MakeNotification({
-                Name = "7b1 Hub",
-                Content = "Đã bật Low-End Fix cho máy yếu!",
-                Image = "rbxassetid://4483345998",
-                Time = 3
-            })
-        else
-            RestoreVisualEffects()
-            OrionLib:MakeNotification({
-                Name = "7b1 Hub",
-                Content = "Đã tắt Low-End Fix!",
-                Image = "rbxassetid://4483345998",
-                Time = 3
-            })
-        end
-    end
-})
-
-TabOptimize:AddButton({
-    Name = "🧹 Xóa Hiệu Ứng Đồ Họa Nặng",
-    Callback = function()
-        DisableVisualHeavyEffects()
-        OrionLib:MakeNotification({
-            Name = "7b1 Hub",
-            Content = "Đã xóa hiệu ứng đồ họa nặng!",
-            Time = 3
-        })
-    end
-})
-
-TabOptimize:AddButton({
-    Name = "📉 Khôi Phục Hiệu Ứng Mặc Định",
-    Callback = function()
-        RestoreVisualEffects()
-        OrionLib:MakeNotification({
-            Name = "7b1 Hub",
-            Content = "Đã khôi phục hiệu ứng mặc định!",
-            Time = 3
-        })
-    end
-})
-
-OrionLib:Init()
+Window:SelectTab(1)
