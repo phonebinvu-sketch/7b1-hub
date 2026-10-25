@@ -1,135 +1,59 @@
 -- =======================================================
--- 7b1 Hub - Fluent UI Version
+-- 7b1 Hub - Universal Loader & Router
+-- Specializing in: Blox Fruits & Steal An Egg
 -- Supported: PC, Android, Cloud Phone | Keyless
 -- =======================================================
 
-local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
-local PlaceId = game.PlaceId
+-- 1. Danh Sách Script Tương Ứng
+local SAE_SCRIPT = "https://raw.githubusercontent.com/tienkhanh1/Chilli-Hub-Script/refs/heads/main/StealAnEggg"
+local BF_SCRIPT  = "https://raw.githubusercontent.com/realkidhub/realkid/refs/heads/main/main.lua"
 
--- Khởi tạo Window
-local Window = Fluent:CreateWindow({
-    Title = "7b1 Hub | Universal",
-    SubTitle = "Auto Detect Game",
-    TabWidth = 160,
-    Size = UDim2.fromOffset(500, 320),
-    Theme = "Dark",
-    MinimizeKey = Enum.KeyCode.LeftControl
-})
-
--- Hàm Fix Lag Max
-local function ApplyMaxFixLag()
-    local Terrain = workspace:FindFirstChildOfClass('Terrain')
-    if Terrain then
-        Terrain.WaterWaveSize = 0
-        Terrain.WaterWaveSpeed = 0
-        Terrain.WaterReflectance = 0
-        Terrain.WaterTransparency = 0
-    end
-    game:GetService("Lighting").GlobalShadows = false
-    game:GetService("Lighting").FogEnd = 9e9
-    
-    for _, v in pairs(game:GetDescendants()) do
-        if v:IsA("Part") or v:IsA("UnionOperation") or v:IsA("MeshPart") then
-            v.Material = Enum.Material.SmoothPlastic
-            v.Reflectance = 0
-        elseif v:IsA("Decal") or v:IsA("Texture") then
-            v:Destroy()
-        elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
-            v.Enabled = false
-        end
-    end
-    
-    Fluent:Notify({
-        Title = "7b1 Hub",
-        Content = "Đã kích hoạt Fix Lag Max thành công!",
-        Duration = 3
-    })
-end
-
--- TAB 1: FIX LAG & UTILITY
-local Tabs = {
-    Utility = Window:AddTab({ Title = "Fix Lag & Utility", Icon = "zap" })
+-- 2. Bảng Ánh Xạ Theo GameId (Cơ chế giống Chilli.lua)
+local byGameId = {
+    [10563114921] = SAE_SCRIPT, -- Steal An Egg GameId
 }
 
-Tabs.Utility:AddButton({
-    Title = "⚡ Kích Hoạt Fix Lag Max",
-    Description = "Tăng FPS tối đa cho Cloud Phone & Điện thoại",
-    Callback = function()
-        ApplyMaxFixLag()
-    end
-})
+-- 3. Bảng Ánh Xạ Theo PlaceId (Chứa cả ID Blox Fruits & Steal An Egg)
+local byPlaceId = {
+    -- Steal An Egg Place IDs
+    [107778070777162] = SAE_SCRIPT,
+    [18806284102]     = SAE_SCRIPT,
+    
+    -- Blox Fruits Place IDs (Sea 1, Sea 2, Sea 3)
+    [2753915549] = BF_SCRIPT,
+    [4442272183] = BF_SCRIPT,
+    [7449423635] = BF_SCRIPT,
+}
 
-Tabs.Utility:AddButton({
-    Title = "🛡️ Chống AFK (Tránh Văng 20p)",
-    Description = "Tự động giữ kết nối 24/7",
-    Callback = function()
-        local ba = game:GetService("VirtualUser")
-        game:GetService("Players").LocalPlayer.Idled:Connect(function()
-            ba:CaptureController()
-            ba:ClickButton2(Vector2.new())
-        end)
-        Fluent:Notify({
-            Title = "7b1 Hub",
-            Content = "Đã bật Anti-AFK!",
-            Duration = 3
-        })
-    end
-})
-
--- NHẬN DIỆN GAME & THÊM TAB
-local isSAE = string.find(game:GetService("MarketplaceService"):GetProductInfo(PlaceId).Name:lower(), "egg")
-local isBF  = (PlaceId == 2753915549 or PlaceId == 4442272183 or PlaceId == 7449423635) or string.find(game:GetService("MarketplaceService"):GetProductInfo(PlaceId).Name:lower(), "blox fruit")
-
-if isSAE then
-    Tabs.SAE = Window:AddTab({ Title = "Steal An Egg", Icon = "egg" })
-
-    Tabs.SAE:AddButton({
-        Title = "▶ Run Chilli V4 (Tiếng Việt)",
-        Callback = function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/kadit9999/stealanegg/refs/heads/main/chillimodrubu.lua"))()
-        end
-    })
-
-    Tabs.SAE:AddButton({
-        Title = "▶ Run Chilli Vzexe (Spicy)",
-        Callback = function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/tienkhanh1/spicy/main/Chilli.lua"))()
-        end
-    })
-
-    Tabs.SAE:AddButton({
-        Title = "▶ Run Chilli Venyx (Mod Viễn Đông)",
-        Callback = function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/ronnei/hihi/refs/heads/main/chillihubnew.lua"))()
-        end
-    })
-
-elseif isBF then
-    Tabs.BF = Window:AddTab({ Title = "Blox Fruits", Icon = "swords" })
-
-    Tabs.BF:AddButton({
-        Title = "▶ Run RealKid Hub (Blox Fruits)",
-        Callback = function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/realkidhub/realkid/refs/heads/main/main.lua"))()
-        end
-    })
-
-else
-    Tabs.All = Window:AddTab({ Title = "All Scripts", Icon = "layers" })
-
-    Tabs.All:AddButton({
-        Title = "▶ Run RealKid Hub (Blox Fruits)",
-        Callback = function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/realkidhub/realkid/refs/heads/main/main.lua"))()
-        end
-    })
-
-    Tabs.All:AddButton({
-        Title = "▶ Run Chilli V4 (Steal An Egg)",
-        Callback = function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/kadit9999/stealanegg/refs/heads/main/chillimodrubu.lua"))()
-        end
-    })
+-- 4. Chờ Lấy GameId & PlaceId
+local gameId = game.GameId
+while gameId == 0 and game.PlaceId == 0 do
+    task.wait()
+    gameId = game.GameId
 end
 
-Window:SelectTab(1)
+-- 5. Lấy URL Script Tương Ứng
+local url = byGameId[gameId] or byPlaceId[game.PlaceId]
+
+-- Nếu không thuộc 2 game trên, tự động chạy Anti-AFK & Fix Lag nhẹ
+if not url then
+    local ba = game:GetService("VirtualUser")
+    game:GetService("Players").LocalPlayer.Idled:Connect(function()
+        ba:CaptureController()
+        ba:ClickButton2(Vector2.new())
+    end)
+    return
+end
+
+-- 6. Cơ Chế Thử Kết Nối 3 Lần (Đảm bảo load 100% không bị xịt)
+for _ = 1, 3 do
+    local ok, source = pcall(game.HttpGet, game, url)
+    if ok and type(source) == "string" and source ~= "" then
+        local chunk = loadstring(source)
+        if chunk then
+            chunk()
+        end
+        return
+    end
+    task.wait(0.5)
+end
