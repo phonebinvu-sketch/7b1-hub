@@ -116,4 +116,114 @@ TabBF:AddButton({
     end    
 })
 
+-- TAB 4: LOW-END OPTIMIZATION
+local TabOptimize = Window:MakeTab({
+    Name = "Low-End Optimizer",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+local lowEndMode = false
+
+local function DisableVisualHeavyEffects()
+    local lighting = game:GetService("Lighting")
+    lighting.GlobalShadows = false
+    lighting.FogEnd = 9e9
+    lighting.FogStart = 9e9
+    lighting.Brightness = 1
+    lighting.ClockTime = 14
+    lighting.OutdoorAmbient = Color3.fromRGB(128, 128, 128)
+
+    local terrain = workspace:FindFirstChildOfClass("Terrain")
+    if terrain then
+        terrain.WaterWaveSize = 0
+        terrain.WaterWaveSpeed = 0
+        terrain.WaterReflectance = 0
+        terrain.WaterTransparency = 0
+    end
+
+    for _, obj in ipairs(game:GetDescendants()) do
+        if obj:IsA("Part") or obj:IsA("UnionOperation") or obj:IsA("MeshPart") then
+            obj.Material = Enum.Material.SmoothPlastic
+            obj.Reflectance = 0
+        elseif obj:IsA("Decal") or obj:IsA("Texture") then
+            if obj.Parent then
+                obj:Destroy()
+            end
+        elseif obj:IsA("ParticleEmitter") or obj:IsA("Trail") or obj:IsA("Beam") then
+            obj.Enabled = false
+        elseif obj:IsA("Explosion") then
+            obj.BlastPressure = 0
+            obj.BlastRadius = 0
+        end
+    end
+end
+
+local function RestoreVisualEffects()
+    local lighting = game:GetService("Lighting")
+    lighting.GlobalShadows = true
+    lighting.FogEnd = 1000
+    lighting.FogStart = 0
+    lighting.Brightness = 2
+    lighting.ClockTime = 14
+    lighting.OutdoorAmbient = Color3.fromRGB(128, 128, 128)
+
+    for _, obj in ipairs(game:GetDescendants()) do
+        if obj:IsA("ParticleEmitter") or obj:IsA("Trail") or obj:IsA("Beam") then
+            obj.Enabled = true
+        elseif obj:IsA("Explosion") then
+            obj.BlastPressure = 1
+            obj.BlastRadius = 10
+        end
+    end
+end
+
+TabOptimize:AddButton({
+    Name = "⚡ Bật/Tắt Low-End Fix",
+    Callback = function()
+        lowEndMode = not lowEndMode
+        if lowEndMode then
+            DisableVisualHeavyEffects()
+            OrionLib:MakeNotification({
+                Name = "7b1 Hub",
+                Content = "Đã bật Low-End Fix cho máy yếu!",
+                Image = "rbxassetid://4483345998",
+                Time = 3
+            })
+        else
+            RestoreVisualEffects()
+            OrionLib:MakeNotification({
+                Name = "7b1 Hub",
+                Content = "Đã tắt Low-End Fix!",
+                Image = "rbxassetid://4483345998",
+                Time = 3
+            })
+        end
+    end
+})
+
+TabOptimize:AddButton({
+    Name = "🧹 Xóa Hiệu Ứng Đồ Họa Nặng",
+    Callback = function()
+        DisableVisualHeavyEffects()
+        OrionLib:MakeNotification({
+            Name = "7b1 Hub",
+            Content = "Đã xóa hiệu ứng đồ họa nặng!",
+            Time = 3
+        })
+    end
+})
+
+TabOptimize:AddButton({
+    Name = "📉 Khôi Phục Hiệu Ứng Mặc Định",
+    Callback = function()
+        RestoreVisualEffects()
+        OrionLib:MakeNotification({
+            Name = "7b1 Hub",
+            Content = "Đã khôi phục hiệu ứng mặc định!",
+            Time = 3
+        })
+    end
+})
+
 OrionLib:Init()
